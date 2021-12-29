@@ -1,0 +1,15 @@
+*.lib
+*.dll
+*.exe
+*.inc
+*.obj
+*.pdb
+ML.ERR
+ReadMe.doc
+WINDBG.HLP.lnk
+lab12_05.asm
+lab13_05.asm
+make.bat
+test2.asm
+windbg.GID
+windbg.cnt
