@@ -2,12 +2,10 @@
 
 ;main EQU start@0
 
-Print_Title PROTO
-Print_Option PROTO
-CHOOSE PROTO
+Print_Start PROTO, consoleHandle:DWORD
 
 .data
-	consoleHandle DWORD ?
+
 	titleStr    BYTE "   ____                           ____                 _ "
                 BYTE "  / ___|_ __ ___  ___ ___ _   _  |  _ \ ___   __ _  __| |"
                 BYTE " | |   | '__/ _ \/ __/ __| | | | | |_) / _ \ / _` |/ _` |"
@@ -15,25 +13,31 @@ CHOOSE PROTO
                 BYTE "  \____|_|  \___/|___/___/\__, | |_| \_\___/ \__,_|\__,_|"
                 BYTE "                          |___/                          "
 
+    GameInstr   BYTE "**************************************************************"
+                BYTE "*                  Use arrow keys to move.                   *"
+                BYTE "*                    Press Esc to pause.                     *"
+                BYTE "* Be careful not to hit the cars while crossing the streets! *"
+                BYTE "**************************************************************"
+
 	xyPos COORD <20,9>
 
-	newgame BYTE "press '->' to start game", 0
-	exitmsg BYTE "press '<-' to exit", 0
+	NewGame BYTE "press '->' to start game", 0
+	LeaveMsg BYTE "press '<-' to exit", 0
 	cellsWritten DWORD ?
 
 .code
 ;main PROC
 
-Print_Title PROC USES eax ecx esi
+Print_Start PROC USES eax ecx esi,
+	consoleHandle:DWORD
 
-	call ClrScr
+	call Clrscr
 
-	push ecx
-
-	mov eax, 6
+	mov ecx, 6
 	mov esi, 0
 
 PRINT_T:
+	push ecx
 	INVOKE WriteConsoleOutputCharacter,
 		consoleHandle,
 		ADDR [titleStr + esi],
@@ -42,22 +46,19 @@ PRINT_T:
 		ADDR cellswritten
 
 	add esi, 57
-	inc xyPos.Y
+	inc xyPos.y
 	pop ecx
 	loop PRINT_T
 
+
+Print_Option:
     add xyPos.y, 2
     add xyPos.x, 20
-    ret
-
-Print_Title ENDP
-
-Print_Option PROC
 
     INVOKE WriteConsoleOutputCharacter,
         consoleHandle,
-        ADDR newgame,
-        SIZEOF newgame,
+        ADDR NewGame,
+        SIZEOF NewGame,
         xyPos,
         ADDR cellsWritten
 
@@ -65,27 +66,44 @@ Print_Option PROC
 
     INVOKE WriteConsoleOutputCharacter,
         consoleHandle,
-        ADDR exitmsg,
-        SIZEOF exitmsg,
+        ADDR LeaveMsg,
+        SIZEOF LeaveMsg,
         xyPos,
         ADDR cellsWritten
-    ret
 
-Print_Option ENDP
-
-;main ENDP
-
-CHOOSE PROC USES eax
-
+CHOOSE_OPT:
     call ReadChar
 
-	.IF ax == 4d00h     ;start game
+	.IF ax == 4d00h     ;right arrow to start game
+        jmp INSTRUCTIONS
+    .ENDIF
+    .IF ax == 4b00h     ;left arrow to exit
         ret
     .ENDIF
-    .IF ax == 4b00h     ;exit
-        exit
-    .ENDIF
+
+INSTRUCTIONS:
+    call Clrscr
+
+	mov ecx, 5
+	mov esi, 0
+	mov xyPos.x, 9
+	mov xyPos.y, 10
+PRINT_I:
+	push ecx
+	INVOKE WriteConsoleOutputCharacter,
+		consoleHandle,
+		ADDR [GameInstr + esi],
+		62,
+		xyPos,
+		ADDR cellswritten
+
+	add esi, 62
+	inc xyPos.y
+	pop ecx
+	loop PRINT_I
+
+	INVOKE Sleep, 5000
     ret
 
-CHOOSE ENDP
+Print_Start ENDP
 ;END main
