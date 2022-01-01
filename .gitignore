@@ -13,3 +13,5 @@ make.bat
 test2.asm
 windbg.GID
 windbg.cnt
+cmd.exe.lnk
+WINDBG.HLP

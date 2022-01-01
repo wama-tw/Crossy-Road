@@ -19,6 +19,9 @@
 	speedOne DWORD ?
 	speedTwo DWORD ?
 	speedThree DWORD ?
+	lifeStr  BYTE 4 DUP(?)
+	lifeDisplayPosition COORD <0,0>
+	life WORD 50
 
 	controlSheep PROTO,
         outputHandle: DWORD
@@ -57,8 +60,15 @@
 	getRandomNumber PROTO,
 		rangeLowerbound: DWORD,
 		rangeUpperbound: DWORD
+	checkIfSheepIsHitByCar PROTO,
+		carPosition: COORD
+	changeDisplayLife PROTO,
+		outputHandle: DWORD
+	decToStr PROTO,
+		decNum: WORD
 
 .code
+
 init PROC,
     outputHandle: DWORD
     
@@ -98,6 +108,8 @@ init PROC,
 		1,   ; size of box line
 		sheepPosition,   ; coordinates of first char
 		ADDR cellsWritten     ; output count
+
+	INVOKE changeDisplayLife, outputHandle
 
 	ret
 init ENDP
@@ -355,6 +367,11 @@ copyCars PROC,
 				2,
 				carPosition,   ; coordinates of first char
 				ADDR cellsWritten     ; output count
+			INVOKE checkIfSheepIsHitByCar, carPosition
+			.IF eax == 1
+				sub life, 1
+				INVOKE changeDisplayLife, outputHandle
+			.ENDIF
 			inc carPosition.y
 			add esi, 2
 			pop ecx
@@ -455,9 +472,60 @@ getRandomNumber PROC uses ebx,	; return in eax
 	ret
 getRandomNumber ENDP
 
-checkIfSheepIsHitByCar PROC
+checkIfSheepIsHitByCar PROC uses ebx ecx,
+	carPosition: COORD
 
-    ch
+	mov bx, carPosition.x
+	.IF sheepPosition.x == bx
+		mov bx, carPosition.y
+		.IF sheepPosition.y == bx
+			mov eax, 1
+			ret
+		.ENDIF
+	.ENDIF
+	mov bx, carPosition.x
+	inc bx
+	.IF sheepPosition.x == bx
+		mov bx, carPosition.y
+		.IF sheepPosition.y == bx
+			mov eax, 1
+			ret
+		.ENDIF
+	.ENDIF
 
+	mov eax, 0
     ret
 checkIfSheepIsHitByCar ENDP
+
+changeDisplayLife PROC,
+	outputHandle: DWORD
+
+	INVOKE decToStr, life
+
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,   ; console output handle
+		ADDR lifeStr,
+		4,
+		lifeDisplayPosition,   ; coordinates of first char
+		ADDR cellsWritten     ; output count
+
+	ret
+changeDisplayLife ENDP
+
+decToStr PROC,
+	decNum: WORD
+
+	mov ecx, 4			; WORD型態最高4位數
+	mov dl, 10			; 除數
+	mov ax, decNum			; 被除數
+	change:
+		push ecx
+		div dl
+		add ah, '0'					; 餘數轉成字存到 lifeStr
+		dec ecx
+		mov [lifeStr + ecx], ah
+		movzx ax, al				; 商繼續除
+		pop ecx
+		loop change
+	ret
+decToStr ENDP
