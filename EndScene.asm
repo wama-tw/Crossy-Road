@@ -207,10 +207,12 @@ printline_2:
 		mov bx, res_xyPosition.Y
 		.If cursor_Pos.Y == bx
 			call ClrScr
+			mov eax, 1
 			jmp Exit_PROC
 		.ENDIF
 		mov bx, exit_xyPosition.Y
 		.If cursor_Pos.Y == bx
+			mov eax, 4
 			jmp Exit_PROC
 		.ENDIF
 	.ENDIF
