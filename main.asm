@@ -44,6 +44,7 @@ newLevelStart:
 	jmp play
 resumeFormPause:
 	INVOKE resume, consoleHandle
+	INVOKE printScore, consoleHandle
 play:
 	INVOKE controlSheep, consoleHandle
 	.IF eax == 2
