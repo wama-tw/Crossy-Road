@@ -14,12 +14,13 @@ Print_Start PROTO, consoleHandle:DWORD
                 BYTE "                          |___/                          "
 
     GameInstr   BYTE "**************************************************************"
-                BYTE "*                  Use arrow keys to move.                   *"
+                BYTE "*               Press right arrow key to move.               *"
                 BYTE "*                    Press Esc to pause.                     *"
                 BYTE "* Be careful not to hit the cars while crossing the streets! *"
+                BYTE "*            Press 'Space key' when you are ready!           *"
                 BYTE "**************************************************************"
 
-	xyPos COORD <20,9>
+	xyPos COORD <11,7>
 
 	NewGame BYTE "press '->' to start game", 0
 	LeaveMsg BYTE "press '<-' to exit", 0
@@ -84,7 +85,7 @@ CHOOSE_OPT:
 INSTRUCTIONS:
     call Clrscr
 
-	mov ecx, 5
+	mov ecx, 6
 	mov esi, 0
 	mov xyPos.x, 9
 	mov xyPos.y, 10
@@ -101,9 +102,12 @@ PRINT_I:
 	inc xyPos.y
 	pop ecx
 	loop PRINT_I
-
-	INVOKE Sleep, 5000
-    ret
+READY:
+	call ReadChar
+	.IF ax == 3920h
+        ret
+    .ENDIF
+    loop READY
 
 Print_Start ENDP
 ;END main
