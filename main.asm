@@ -34,7 +34,7 @@ main PROC
 	
 restart:
 	mov score, 0
-	mov life, 5
+	mov life, 3
 	mov levelNow, 0
 newLevelStart:
 	inc levelNow

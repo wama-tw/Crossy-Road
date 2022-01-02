@@ -6,7 +6,7 @@
 	roadThreeCarPosition COORD <?,?>
 	sheepPosition COORD <5,12>
 	roadSide   BYTE 0B3h, 11 DUP(' '), 0B3h
-	sheep   BYTE 's'
+	sheep   BYTE '@'
 	car   BYTE 0DAh, 0BFh,
 			   0B3h, 0B3h,
 			   0C0h, 0D9h
@@ -22,7 +22,7 @@
 	lifeStr  BYTE 4 DUP(?)
 	lifeDisplayPosition COORD <0,0>
 	lifeDisplay BYTE "LIFE:"
-	life WORD 5
+	life WORD 3
 
 	controlSheep PROTO,
         outputHandle: DWORD
