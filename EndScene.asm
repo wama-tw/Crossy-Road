@@ -1,7 +1,7 @@
 ; INCLUDE Irvine32.inc
 
 ; main EQU start@0
-
+initEnd PROTO
 End_printChoices PROTO, End_score:WORD, outputHandle:DWORD
 action PROTO, outputHandle:DWORD
 dec2str PROTO, scoreDec:WORD
@@ -52,12 +52,19 @@ printScoreLen DWORD 4
 ; 	call WaitMsg
 ; 	exit
 ; main ENDP
-
+initEnd PROC
+	mov ebx, xyInit
+	mov xyPosition, ebx
+	mov time, 0
+	mov printScoreLen, 4
+	ret
+initEnd ENDP
 
 End_printChoices PROC,
 	End_score:WORD,
 	outputHandle:DWORD
 	call Clrscr
+	call initEnd
 	INVOKE dec2str, End_score						;數字轉字串
 
 	add xyPosition.Y, 7								;設定分數要印的位置
@@ -79,6 +86,9 @@ End_printChoices PROC,
 printScore_1:
 	push ecx
 	.IF [score_Str + esi] == '0'
+		.IF esi == 3
+			jmp printScore_2
+		.ENDIF
 		inc esi
 		dec printScoreLen
 	.ENDIF
