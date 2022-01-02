@@ -23,6 +23,9 @@ initScore PROC,
 		score_Pos,
 		ADDR tokenswritten
 	add score_Pos.x, LENGTHOF score_Text
+	mov dx, score
+	INVOKE decStr, dx
+	INVOKE printScore, outPutHandle
 	ret
 initScore ENDP
 
