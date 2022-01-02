@@ -208,6 +208,8 @@ START:
 
     LOOP START
 
+    popad
+
     ret
 Print_Number ENDP
 

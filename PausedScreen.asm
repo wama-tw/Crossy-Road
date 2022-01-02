@@ -165,11 +165,14 @@ START:
     .IF (ax == 1C0Dh) && (cursorPos.y == bx)
         call Clrscr
         popad
+        mov eax, 2
         ret
     .ENDIF
     .IF (ax == 1C0Dh) && (cursorPos.y == dx)
         call Clrscr
         INVOKE End_printChoices, score, consoleH
+        popad
+        mov eax, 2
         ret
     .ENDIF
 
