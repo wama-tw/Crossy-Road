@@ -21,7 +21,7 @@
 	speedThree DWORD ?
 	lifeStr  BYTE 4 DUP(?)
 	lifeDisplayPosition COORD <0,0>
-	life WORD 50
+	life WORD 5
 
 	controlSheep PROTO,
         outputHandle: DWORD
@@ -79,6 +79,10 @@
 init PROC,
     outputHandle: DWORD
     
+	mov sheepPosition.x, 5
+	mov sheepPosition.y, 12
+
+	mov roadPosition.x, 20
 	INVOKE newRoad, roadPosition, 1, outputHandle
 	INVOKE getRandomNumber, 14, 25
 	add roadPosition.x, ax
@@ -87,11 +91,11 @@ init PROC,
 	add roadPosition.x, ax
 	INVOKE newRoad, roadPosition, 3, outputHandle
 
-	INVOKE getRandomNumber, 50, 300
+	INVOKE getRandomNumber, 200, 300
 	mov speedOne, eax
-	INVOKE getRandomNumber, 50, 300
+	INVOKE getRandomNumber, 200, 300
 	mov speedTwo, eax
-	INVOKE getRandomNumber, 50, 300
+	INVOKE getRandomNumber, 200, 300
 	mov speedThree, eax
 
 	INVOKE GetTickCount
@@ -117,16 +121,107 @@ init PROC,
 		ADDR cellsWritten     ; output count
 
 	INVOKE changeDisplayLife, outputHandle
-
 	INVOKE initScore, outputHandle
 	ret
 init ENDP
 
-controlSheep PROC uses eax ebx edx,
+resume PROC,
+    outputHandle: DWORD
+	
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
+	mov cursorInfo.dwSize, 100
+	mov cursorInfo.bVisible, 0
+	INVOKE SetConsoleCursorInfo,
+    	outputHandle,
+        ADDR cursorInfo
+
+	push roadOneCarPosition
+	sub roadOneCarPosition.x, 6
+	mov roadOneCarPosition.y, 0
+	mov ecx, 25
+	drawRoadOne: 
+	push ecx
+	INVOKE WriteConsoleOutputCharacter,
+        outputHandle,   ; console output handle
+        ADDR roadSide,   ; pointer to the top box line
+        13,   ; size of box line
+        roadOneCarPosition,   ; coordinates of first char
+        ADDR cellsWritten     ; output count
+	inc roadOneCarPosition.y
+	pop ecx
+	loop drawRoadOne
+	pop roadOneCarPosition
+
+	push roadTwoCarPosition
+	sub roadTwoCarPosition.x, 6
+	mov roadTwoCarPosition.y, 0
+	mov ecx, 25
+	drawRoadTwo: 
+	push ecx
+	INVOKE WriteConsoleOutputCharacter,
+        outputHandle,   ; console output handle
+        ADDR roadSide,   ; pointer to the top box line
+        13,   ; size of box line
+        roadTwoCarPosition,   ; coordinates of first char
+        ADDR cellsWritten     ; output count
+	inc roadTwoCarPosition.y
+	pop ecx
+	loop drawRoadTwo
+	pop roadTwoCarPosition
+
+	push roadThreeCarPosition
+	sub roadThreeCarPosition.x, 6
+	mov roadThreeCarPosition.y, 0
+	mov ecx, 25
+	drawRoadThree: 
+	push ecx
+	INVOKE WriteConsoleOutputCharacter,
+        outputHandle,   ; console output handle
+        ADDR roadSide,   ; pointer to the top box line
+        13,   ; size of box line
+        roadThreeCarPosition,   ; coordinates of first char
+        ADDR cellsWritten     ; output count
+	inc roadThreeCarPosition.y
+	pop ecx
+	loop drawRoadThree
+	pop roadThreeCarPosition
+
+	INVOKE GetTickCount
+	mov startTimeOne, eax
+	mov eax, speedOne
+	add startTimeOne, eax
+	
+	INVOKE GetTickCount
+	mov startTimeTwo, eax
+	mov eax, speedTwo
+	add startTimeTwo, eax
+	
+	INVOKE GetTickCount
+	mov startTimeThree, eax
+	mov eax, speedThree
+	add startTimeThree, eax
+	
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,   ; console output handle
+		ADDR sheep,   ; pointer to the top box line
+		1,   ; size of box line
+		sheepPosition,   ; coordinates of first char
+		ADDR cellsWritten     ; output count
+
+	INVOKE changeDisplayLife, outputHandle
+	INVOKE initScore, outputHandle
+	ret
+resume ENDP
+
+controlSheep PROC uses ebx edx,
     outputHandle: DWORD
 
 	INVOKE Sleep, 10
 	call ReadKey
+	.IF ax == 011Bh ;ESC
+		mov eax, 2
+		ret
+	.ENDIF
 	.IF al == 0
 		push sheepPosition.x
 		push sheepPosition.y
@@ -137,9 +232,9 @@ controlSheep PROC uses eax ebx edx,
 		.IF ah == 50h ;DOWN
 			add sheepPosition.y, 1
 		.ENDIF
-		.IF ah == 4Bh ;LEFT
-			sub sheepPosition.x, 1
-		.ENDIF
+		;.IF ah == 4Bh ;LEFT
+		;	sub sheepPosition.x, 1
+		;.ENDIF
 		.IF ah == 4Dh ;RIGHT
 			add sheepPosition.x, 1
 		.ENDIF
@@ -184,6 +279,7 @@ controlSheep PROC uses eax ebx edx,
 			ADDR cellsWritten     ; output count
 	.ENDIF
 
+	mov eax, 1
 	ret
 controlSheep ENDP
 

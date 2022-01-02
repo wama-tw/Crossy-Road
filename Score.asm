@@ -9,14 +9,13 @@ decStr PROTO, scoreDec:WORD
 	printScoreLenth DWORD 4
 	tokenswritten DWORD ?
 	score_inLevel BYTE 4 DUP(?)
-	count DWORD 0
+
 .code
 
 initScore PROC,
 	outPutHandle:DWORD
 	mov ebx, score_initPos
 	mov score_Pos, ebx
-	mov score, 0
 	INVOKE WriteConsoleOutputCharacter, 
 		outPutHandle,
 		ADDR score_Text,
@@ -26,6 +25,7 @@ initScore PROC,
 	add score_Pos.x, LENGTHOF score_Text
 	ret
 initScore ENDP
+
 countScore PROC,
 	sheepPos_X:WORD,
 	roadPos_x:WORD,

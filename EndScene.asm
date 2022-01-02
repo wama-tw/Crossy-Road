@@ -63,6 +63,14 @@ initEnd ENDP
 End_printChoices PROC,
 	End_score:WORD,
 	outputHandle:DWORD
+
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
+	mov cursorInfo.dwSize, 100
+	mov cursorInfo.bVisible, 1
+	INVOKE SetConsoleCursorInfo,
+    	outputHandle,
+        ADDR cursorInfo
+
 	call Clrscr
 	call initEnd
 	INVOKE dec2str, End_score						;數字轉字串
