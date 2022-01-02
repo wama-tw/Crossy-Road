@@ -61,7 +61,7 @@ PausedScreen PROC,
 
 	pushad
 	call Clrscr
-	
+
 	mov cursorInfo.dwSize, 100
 	mov cursorInfo.bVisible, 1
 	INVOKE SetConsoleCursorInfo,
@@ -153,7 +153,6 @@ START:
     .ENDIF
     .IF (ax == 1C0Dh) && (cursorPos.y == dx)
         call Clrscr
-        INVOKE End_printChoices, score, consoleH
         popad
         mov eax, 3
         ret
