@@ -66,6 +66,13 @@
 		outputHandle: DWORD
 	decToStr PROTO,
 		decNum: WORD
+	initScore PROTO,
+		outputHandle: DWORD
+	countScore PROTO, 
+		sheepPos_X: WORD, 
+		roadPos_x: WORD, 
+		outputHandle: DWORD
+		
 
 .code
 
@@ -111,6 +118,7 @@ init PROC,
 
 	INVOKE changeDisplayLife, outputHandle
 
+	INVOKE initScore, outputHandle
 	ret
 init ENDP
 
@@ -202,6 +210,9 @@ checkIfSheepIsByRoad PROC,
 			sheepPosition,   ; coordinates of first char
 			ADDR cellsWritten     ; output count
 	.ENDIF
+
+	add roadSideX, 6
+	INVOKE countScore, sheepPosition.x, roadSideX, outputHandle
 
 	ret
 checkIfSheepIsByRoad ENDP
