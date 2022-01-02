@@ -40,7 +40,7 @@ newLevelStart:
 	inc levelNow
 	INVOKE MapChange, consoleHandle, levelNow
 	call Clrscr
-	INVOKE init, consoleHandle
+	INVOKE init, consoleHandle, levelNow
 	jmp play
 resumeFormPause:
 	INVOKE resume, consoleHandle

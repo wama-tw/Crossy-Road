@@ -21,6 +21,7 @@
 	speedThree DWORD ?
 	lifeStr  BYTE 4 DUP(?)
 	lifeDisplayPosition COORD <0,0>
+	lifeDisplay BYTE "LIFE:"
 	life WORD 5
 
 	controlSheep PROTO,
@@ -29,7 +30,8 @@
 		roadSideX: WORD,
         outputHandle: DWORD
 	init PROTO,
-        outputHandle: DWORD
+        outputHandle: DWORD,
+		levelNum: BYTE
 	newRoad PROTO,
 		thisRoadPosition: COORD,
 		roadNum: BYTE,
@@ -76,8 +78,9 @@
 
 .code
 
-init PROC,
-    outputHandle: DWORD
+init PROC uses ebx,
+    outputHandle: DWORD,
+	levelNum: BYTE
     
 	mov sheepPosition.x, 5
 	mov sheepPosition.y, 12
@@ -91,11 +94,19 @@ init PROC,
 	add roadPosition.x, ax
 	INVOKE newRoad, roadPosition, 3, outputHandle
 
-	INVOKE getRandomNumber, 200, 300
+	mov ebx, 0
+	mov al, levelNum
+	mov bl, 20
+	mul bl
+	mov bx, ax
+	INVOKE getRandomNumber, 250, 300
+	sub eax, ebx
 	mov speedOne, eax
-	INVOKE getRandomNumber, 200, 300
+	INVOKE getRandomNumber, 250, 300
+	sub eax, ebx
 	mov speedTwo, eax
-	INVOKE getRandomNumber, 200, 300
+	INVOKE getRandomNumber, 250, 300
+	sub eax, ebx
 	mov speedThree, eax
 
 	INVOKE GetTickCount
@@ -120,6 +131,14 @@ init PROC,
 		sheepPosition,   ; coordinates of first char
 		ADDR cellsWritten     ; output count
 
+	mov lifeDisplayPosition.x, 0
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,   ; console output handle
+		ADDR lifeDisplay,   ; pointer to the top box line
+		5,   ; size of box line
+		lifeDisplayPosition,   ; coordinates of first char
+		ADDR cellsWritten     ; output count
+	add lifeDisplayPosition.x, 6
 	INVOKE changeDisplayLife, outputHandle
 	INVOKE initScore, outputHandle
 	ret
@@ -208,6 +227,14 @@ resume PROC,
 		sheepPosition,   ; coordinates of first char
 		ADDR cellsWritten     ; output count
 
+	mov lifeDisplayPosition.x, 0
+	INVOKE WriteConsoleOutputCharacter,
+		outputHandle,   ; console output handle
+		ADDR lifeDisplay,   ; pointer to the top box line
+		5,   ; size of box line
+		lifeDisplayPosition,   ; coordinates of first char
+		ADDR cellsWritten     ; output count
+	add lifeDisplayPosition.x, 6
 	INVOKE changeDisplayLife, outputHandle
 	INVOKE initScore, outputHandle
 	ret
