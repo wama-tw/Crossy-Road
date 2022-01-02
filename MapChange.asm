@@ -60,6 +60,12 @@ Print_Number PROTO,
             BYTE " | (_) |"
             BYTE "  \__, |"
             BYTE "    /_/ "
+    num0T   BYTE "   ___  "
+            BYTE "  / _ \ "
+            BYTE " | | | |"
+            BYTE " | |_| |"
+            BYTE "  \___/ "
+
 
 
 
@@ -80,7 +86,7 @@ MapChange PROC,
 	call Clrscr
 
 	mov levelText, OFFSET levelT
-	mov levelTPos.x, 18
+	mov levelTPos.x, 16
 	mov levelTPos.y, 9
 	mov cursorInfo.dwSize, 100
 	mov cursorInfo.bVisible, 0
@@ -125,12 +131,20 @@ Print_Number PROC,
 
     LOCAL print_count:DWORD
     LOCAL print_num:PTR BYTE
+    LOCAL print_num_2:PTR BYTE
     LOCAL printPos:COORD
+    LOCAL printPos_2:COORD
 
     pushad
 
     mov printPos.x, 53
     mov printPos.y, 9
+    mov printPos_2.x, 61
+    mov printPos_2.y, 9
+
+    .IF level >=10
+        jmp L
+    .ENDIF
 
     .IF level == 1
         mov print_num, OFFSET num1T
@@ -178,6 +192,109 @@ START:
 
     LOOP START
 
+    jmp L_final
+
+L:
+    movzx ax, level
+    mov bl, 10
+    div bl
+
+    .IF al == 1
+        mov print_num, OFFSET num1T
+    .ENDIF
+    .IF al == 2
+        mov print_num, OFFSET num2T
+    .ENDIF
+    .IF al == 3
+        mov print_num, OFFSET num3T
+    .ENDIF
+    .IF al == 4
+        mov print_num, OFFSET num4T
+    .ENDIF
+    .IF al == 5
+        mov print_num, OFFSET num5T
+    .ENDIF
+    .IF al ==6
+        mov print_num, OFFSET num6T
+    .ENDIF
+    .IF al == 7
+        mov print_num, OFFSET num7T
+    .ENDIF
+    .IF al == 8
+        mov print_num, OFFSET num8T
+    .ENDIF
+    .IF al == 9
+        mov print_num, OFFSET num9T
+    .ENDIF
+
+    .IF ah == 1
+        mov print_num_2, OFFSET num1T
+    .ENDIF
+    .IF ah == 2
+        mov print_num_2, OFFSET num2T
+    .ENDIF
+    .IF ah == 3
+        mov print_num_2, OFFSET num3T
+    .ENDIF
+    .IF ah == 4
+        mov print_num_2, OFFSET num4T
+    .ENDIF
+    .IF ah == 5
+        mov print_num_2, OFFSET num5T
+    .ENDIF
+    .IF ah ==6
+        mov print_num_2, OFFSET num6T
+    .ENDIF
+    .IF ah == 7
+        mov print_num_2, OFFSET num7T
+    .ENDIF
+    .IF ah == 8
+        mov print_num_2, OFFSET num8T
+    .ENDIF
+    .IF ah == 9
+        mov print_num_2, OFFSET num9T
+    .ENDIF
+    .IF ah == 0
+        mov print_num_2, OFFSET num0T
+    .ENDIF
+
+    mov ecx, 5
+L1:
+    push ecx
+    INVOKE WriteConsoleOutputCharacter,
+        consoleHandle,
+        print_num,
+        8,
+        printPos,
+        ADDR print_count
+
+    mov ebx, 8
+    add print_num, ebx
+    add printPos.y, 1
+
+    pop ecx
+
+    LOOP L1
+
+    mov ecx, 5
+L2:
+    push ecx
+    INVOKE WriteConsoleOutputCharacter,
+        consoleHandle,
+        print_num_2,
+        8,
+        printPos_2,
+        ADDR print_count
+
+    mov ebx, 8
+    add print_num_2, ebx
+    add printPos_2.y, 1
+
+    pop ecx
+
+    LOOP L2
+
+L_final:
     popad
 
     ret
