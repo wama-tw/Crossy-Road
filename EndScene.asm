@@ -1,9 +1,9 @@
 ; INCLUDE Irvine32.inc
 
 ; main EQU start@0
-
-End_printChoices PROTO, End_score:WORD, outPutHandle:DWORD
-action PROTO, outPutHandle:DWORD
+initEnd PROTO
+End_printChoices PROTO, End_score:WORD, outputHandle:DWORD
+action PROTO, outputHandle:DWORD
 dec2str PROTO, scoreDec:WORD
 .data
 endMsg_1	BYTE "  ____    _    __  __ _____    _____     _______ ____  "	;結束訊息
@@ -23,20 +23,20 @@ restartMsg BYTE "> Press Enter to restart."		;重新開始選項
 exitMsg BYTE "> Press Enter to exit."			;離開選項
 
 ; consoleHandle DWORD ?
-cellswritten DWORD ?		
+cellswrt DWORD ?		
 xyInit COORD <13, 5> 							;初始位置
 xyPosition COORD <13, 5> 						;目前位置
 res_xyPosition COORD <?, ?> 					;重新開始選項位置
 exit_xyPosition COORD <?, ?> 					;離開選項位置
 score_xyPosition COORD <?, ?>					;分數位置
 cursor_Pos COORD <?, ?>							;cursor位置
-windowBound SMALL_RECT <0,0,80,25>				;視窗大小
+; windowBound SMALL_RECT <0,0,80,25>				;視窗大小
 time DWORD 0									;經過時間
 changeEndMsg DWORD 0							;判斷印哪個結束訊息
 scoreMsg BYTE "SCORE: "							;分數訊息
 ; score_Dec WORD 2559								;分數test(最高分2559分數再高要用DWORD存了，但應該不到那就掛了啦:))
 score_Str BYTE 4 DUP(?)
-printScoreLen DWORD 5
+printScoreLen DWORD 4
 
 .code
 ; main PROC
@@ -52,12 +52,27 @@ printScoreLen DWORD 5
 ; 	call WaitMsg
 ; 	exit
 ; main ENDP
-
+initEnd PROC
+	mov ebx, xyInit
+	mov xyPosition, ebx
+	mov time, 0
+	mov printScoreLen, 4
+	ret
+initEnd ENDP
 
 End_printChoices PROC,
 	End_score:WORD,
-	outPutHandle:DWORD
+	outputHandle:DWORD
 
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
+	mov cursorInfo.dwSize, 100
+	mov cursorInfo.bVisible, 1
+	INVOKE SetConsoleCursorInfo,
+    	outputHandle,
+        ADDR cursorInfo
+
+	call Clrscr
+	call initEnd
 	INVOKE dec2str, End_score						;數字轉字串
 
 	add xyPosition.Y, 7								;設定分數要印的位置
@@ -66,11 +81,11 @@ End_printChoices PROC,
 	add score_xyPosition.X, 22
 
 	INVOKE WriteConsoleOutputCharacter, 			;印分數訊息
-		outPutHandle,
+		outputHandle,
 		ADDR scoreMsg,
 		LENGTHOF scoreMsg,
 		score_xyPosition,
-		ADDR cellswritten
+		ADDR cellswrt
 
 	add score_xyPosition.X, LENGTHOF scoreMsg
 
@@ -79,6 +94,9 @@ End_printChoices PROC,
 printScore_1:
 	push ecx
 	.IF [score_Str + esi] == '0'
+		.IF esi == 3
+			jmp printScore_2
+		.ENDIF
 		inc esi
 		dec printScoreLen
 	.ENDIF
@@ -89,11 +107,11 @@ printScore_1:
 	loop printScore_1
 printScore_2:	
 	INVOKE WriteConsoleOutputCharacter, 			;印分數
-		outPutHandle,
+		outputHandle,
 		ADDR [score_Str + esi],
 		printScoreLen,
 		score_xyPosition,
-		ADDR cellswritten
+		ADDR cellswrt
 
 	add xyPosition.Y, 2								;設定重新開始選項要印的位置
 
@@ -101,11 +119,11 @@ printScore_2:
 	mov res_xyPosition, ebx							;將設定的位置存到重新開始選項位置
 
 	INVOKE WriteConsoleOutputCharacter, 			;印重新開始選項
-		outPutHandle,
+		outputHandle,
 		ADDR restartMsg,
 		LENGTHOF restartMsg,
 		res_xyPosition,
-		ADDR cellswritten
+		ADDR cellswrt
 
 	mov ebx, res_xyPosition							;將重新開始選項的第一個字存為 cursor 位置
 	mov cursor_Pos, ebx
@@ -116,19 +134,19 @@ printScore_2:
 	mov exit_xyPosition, ebx
 
 	INVOKE WriteConsoleOutputCharacter, 			;印離開選項
-		outPutHandle,
+		outputHandle,
 		ADDR exitMsg,
 		LENGTHOF exitMsg,
 		exit_xyPosition,
-		ADDR cellswritten
+		ADDR cellswrt
 
-	INVOKE action, outPutHandle							;要執行的動作
+	INVOKE action, outputHandle							;要執行的動作
 	ret
 End_printChoices ENDP
 
 
 action PROC USES eax ebx,
-	outPutHandle:DWORD
+	outputHandle:DWORD
     call GetTickCount								;目前執行時間存到 time 並加 0.45 秒
     mov time, eax
     add time, 450
@@ -151,11 +169,11 @@ printline_1:
 	push ecx
 
 	INVOKE WriteConsoleOutputCharacter, 
-		outPutHandle,
+		outputHandle,
 		ADDR [endMsg_1 + esi],
 		55,
 		xyPosition,
-		ADDR cellswritten
+		ADDR cellswrt
 
 	add esi, 55
 	inc xyPosition.Y
@@ -168,11 +186,11 @@ printline_2:
 	push ecx
 
 	INVOKE WriteConsoleOutputCharacter, 
-		outPutHandle,
+		outputHandle,
 		ADDR [endMsg_2 + esi],
 		55,
 		xyPosition,
-		ADDR cellswritten
+		ADDR cellswrt
 
 	add esi, 55
 	inc xyPosition.Y
@@ -180,7 +198,7 @@ printline_2:
 	loop printline_2
     .ENDIF
     
-	INVOKE SetConsoleCursorPosition, outPutHandle, cursor_Pos		;設定cursor位置
+	INVOKE SetConsoleCursorPosition, outputHandle, cursor_Pos		;設定cursor位置
 
 	mov eax, 100
 	call Delay
@@ -207,10 +225,13 @@ printline_2:
 		mov bx, res_xyPosition.Y
 		.If cursor_Pos.Y == bx
 			call ClrScr
+			mov changeScene, 1
 			jmp Exit_PROC
 		.ENDIF
 		mov bx, exit_xyPosition.Y
 		.If cursor_Pos.Y == bx
+			call ClrScr
+			mov changeScene, 4
 			jmp Exit_PROC
 		.ENDIF
 	.ENDIF

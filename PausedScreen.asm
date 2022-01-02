@@ -33,8 +33,6 @@ dec2str PROTO,
 .data
 	continueT BYTE "> Press ENTER to continue", 0
 	exitT BYTE "> Press ENTER to exit", 0
-	testValue DWORD 123456
-	outputHandle DWORD 0
 	PauseT 	BYTE " ____   _   _   _ ____  _____ "
             BYTE "|  _ \ / \ | | | / ___|| ____|"
             BYTE "| |_) / _ \| | | \___ \|  _|  "
@@ -43,28 +41,6 @@ dec2str PROTO,
 
 
 .code
-;main PROC
-;	mov eax, testValue
-;	call WriteDec
-;	INVOKE Sleep, 1000
-;
-;	INVOKE GetStdHandle, STD_OUTPUT_HANDLE
-;	mov outputHandle, eax
-;
-;	call ReadChar
-;	.IF ax == 011Bh
-;		INVOKE PausedScreen, outputHandle
-;	.ENDIF
-;
-;	mov eax, testValue
-;	add eax, 10
-;	call WriteDec
-;	INVOKE Sleep, 2000
-;
-;	call WaitMsg
-;
-;	exit
-;main ENDP
 
 PausedScreen PROC,
 	consoleH:DWORD,
@@ -81,9 +57,16 @@ PausedScreen PROC,
 	LOCAL exitLength:DWORD
 	LOCAL PausePos:COORD
 	LOCAL cursorPos:COORD
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
 
 	pushad
 	call Clrscr
+	
+	mov cursorInfo.dwSize, 100
+	mov cursorInfo.bVisible, 1
+	INVOKE SetConsoleCursorInfo,
+    	consoleH,
+        ADDR cursorInfo
 
 	mov continueText, OFFSET continueT
 	mov exitText, OFFSET exitT
@@ -165,11 +148,14 @@ START:
     .IF (ax == 1C0Dh) && (cursorPos.y == bx)
         call Clrscr
         popad
+        mov eax, 1
         ret
     .ENDIF
     .IF (ax == 1C0Dh) && (cursorPos.y == dx)
         call Clrscr
         INVOKE End_printChoices, score, consoleH
+        popad
+        mov eax, 3
         ret
     .ENDIF
 
@@ -177,6 +163,3 @@ START:
 
 
 PausedScreen ENDP
-
-
-;END main

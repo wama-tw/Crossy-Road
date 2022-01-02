@@ -24,13 +24,20 @@ Print_Start PROTO, consoleHandle:DWORD
 
 	NewGame BYTE "press '->' to start game", 0
 	LeaveMsg BYTE "press '<-' to exit", 0
-	cellsWritten DWORD ?
+	cells_Written DWORD ?
 
 .code
 ;main PROC
 
-Print_Start PROC USES eax ecx esi,
+Print_Start PROC USES ecx esi,
 	consoleHandle:DWORD
+
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
+	mov cursorInfo.dwSize, 100
+	mov cursorInfo.bVisible, 0
+	INVOKE SetConsoleCursorInfo,
+    	consoleHandle,
+        ADDR cursorInfo
 
 	call Clrscr
 
@@ -44,7 +51,7 @@ PRINT_T:
 		ADDR [titleStr + esi],
 		57,
 		xyPos,
-		ADDR cellswritten
+		ADDR cells_Written
 
 	add esi, 57
 	inc xyPos.y
@@ -61,7 +68,7 @@ Print_Option:
         ADDR NewGame,
         SIZEOF NewGame,
         xyPos,
-        ADDR cellsWritten
+        ADDR cells_Written
 
     add xyPos.y, 2
 
@@ -70,7 +77,7 @@ Print_Option:
         ADDR LeaveMsg,
         SIZEOF LeaveMsg,
         xyPos,
-        ADDR cellsWritten
+        ADDR cells_Written
 
 CHOOSE_OPT:
     call ReadChar
@@ -79,6 +86,7 @@ CHOOSE_OPT:
         jmp INSTRUCTIONS
     .ENDIF
     .IF ax == 4b00h     ;left arrow to exit
+		mov eax, 3
         ret
     .ENDIF
 
@@ -96,7 +104,7 @@ PRINT_I:
 		ADDR [GameInstr + esi],
 		62,
 		xyPos,
-		ADDR cellswritten
+		ADDR cells_Written
 
 	add esi, 62
 	inc xyPos.y

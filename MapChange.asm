@@ -1,15 +1,3 @@
-;TITLE Example of ASM              (helloword.ASM)
-
-; This program locates the cursor and displays the
-; system time. It uses two Win32 API structures.
-; Last update: 6/30/2005
-
-;INCLUDE Irvine32.inc
-
-; Redefine external symbols for convenience
-; Redifinition is necessary for using stdcall in .model directive
-; using "start" is because for linking to WinDbg.  added by Huang
-
 MapChange PROTO,
 	consoleHandle:DWORD,
 	level:BYTE
@@ -18,14 +6,10 @@ Print_Number PROTO,
     consoleHandle:DWORD,
     level:BYTE
 
-;main          EQU start@0
-
 ;Comment @
 ;Definitions copied from SmallWin.inc:
 
 .data
-	testValue DWORD 12345
-	outputHandle DWORD 0
 	levelT  BYTE " _     _______     _______ _     "
             BYTE "| |   | ____\ \   / / ____| |    "
             BYTE "| |   |  _|  \ \ / /|  _| | |    "
@@ -80,20 +64,6 @@ Print_Number PROTO,
 
 
 .code
-;main PROC
-;	call Clrscr
-;
-;	INVOKE GetStdHandle, STD_OUTPUT_HANDLE
-;	mov outputHandle, eax
-;
-;	INVOKE MapChange, outputHandle, 1
-;
-;	call Clrscr
-;
-;	call WaitMsg
-;
-;	exit
-;main ENDP
 
 
 MapChange PROC,
@@ -207,6 +177,8 @@ START:
     pop ecx
 
     LOOP START
+
+    popad
 
     ret
 Print_Number ENDP
