@@ -1,8 +1,4 @@
-;INCLUDE Irvine32.inc
-
-;main EQU start@0
-
-Print_Start PROTO, consoleHandle:DWORD
+printStart PROTO, consoleHandle:DWORD
 
 .data
 
@@ -29,7 +25,7 @@ Print_Start PROTO, consoleHandle:DWORD
 .code
 ;main PROC
 
-Print_Start PROC USES ecx esi,
+printStart PROC USES ecx esi,
 	consoleHandle:DWORD
 
 	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
@@ -117,5 +113,4 @@ READY:
     .ENDIF
     loop READY
 
-Print_Start ENDP
-;END main
+printStart ENDP

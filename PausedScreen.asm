@@ -1,21 +1,8 @@
-;TITLE Example of ASM              (helloword.ASM)
-
-; This program locates the cursor and displays the
-; system time. It uses two Win32 API structures.
-; Last update: 6/30/2005
-
-;INCLUDE Irvine32.inc
-;INCLUDE EndScene.asm
-
-; Redefine external symbols for convenience
-; Redifinition is necessary for using stdcall in .model directive
-; using "start" is because for linking to WinDbg.  added by Huang
-
 PausedScreen PROTO,
 	consoleH:DWORD,
 	score:WORD
 
-End_printChoices PROTO,
+printChoices PROTO,
     End_score:WORD,
     handle1:DWORD
 
@@ -24,11 +11,6 @@ action PROTO,
 
 dec2str PROTO,
     scoreDec:WORD
-
-;main          EQU start@0
-
-;Comment @
-;Definitions copied from SmallWin.inc:
 
 .data
 	continueT BYTE "> Press ENTER to continue", 0

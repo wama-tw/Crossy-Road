@@ -1,28 +1,3 @@
-.data
-	xyBound COORD <80,25> ; 一個頁面最大的邊界
-	roadPosition COORD <20,0>
-	roadOneCarPosition COORD <?,?>
-	roadTwoCarPosition COORD <?,?>
-	roadThreeCarPosition COORD <?,?>
-	sheepPosition COORD <5,12>
-	roadSide   BYTE 0B3h, 11 DUP(' '), 0B3h
-	sheep   BYTE '@'
-	car   BYTE 0DAh, 0BFh,
-			   0B3h, 0B3h,
-			   0C0h, 0D9h
-	blank   BYTE 6 DUP(' ')
-	road   BYTE 0B3h
-	startTimeOne DWORD ?
-	startTimeTwo DWORD ?
-	startTimeThree DWORD ?
-	cellsWritten DWORD 0
-	speedOne DWORD ?
-	speedTwo DWORD ?
-	speedThree DWORD ?
-	lifeStr  BYTE 4 DUP(?)
-	lifeDisplayPosition COORD <0,0>
-	lifeDisplay BYTE "LIFE:"
-	life WORD 3
 
 	controlSheep PROTO,
         outputHandle: DWORD
@@ -74,7 +49,32 @@
 		sheepPos_X: WORD, 
 		roadPos_x: WORD, 
 		outputHandle: DWORD
-		
+
+.data
+	xyBound COORD <80,25> ; 一個頁面最大的邊界
+	roadPosition COORD <20,0>
+	roadOneCarPosition COORD <?,?>
+	roadTwoCarPosition COORD <?,?>
+	roadThreeCarPosition COORD <?,?>
+	sheepPosition COORD <5,12>
+	roadSide   BYTE 0B3h, 11 DUP(' '), 0B3h
+	sheep   BYTE '@'
+	car   BYTE 0DAh, 0BFh,
+			   0B3h, 0B3h,
+			   0C0h, 0D9h
+	blank   BYTE 6 DUP(' ')
+	road   BYTE 0B3h
+	startTimeOne DWORD ?
+	startTimeTwo DWORD ?
+	startTimeThree DWORD ?
+	cellsWritten DWORD 0
+	speedOne DWORD ?
+	speedTwo DWORD ?
+	speedThree DWORD ?
+	lifeStr  BYTE 4 DUP(?)
+	lifeDisplayPosition COORD <0,0>
+	lifeDisplay BYTE "LIFE:"
+	life WORD 3
 
 .code
 

@@ -32,7 +32,7 @@ main PROC
      	TRUE,
      	ADDR windowBound
 
-	INVOKE Print_Start, consoleHandle					; 遊戲歡迎/開始畫面
+	INVOKE printStart, consoleHandle					; 遊戲歡迎/開始畫面
 	.IF eax == 3										; 跳到結束畫面	eax = 3
 		jmp ExitProgram
 	.ENDIF
@@ -43,7 +43,7 @@ restart:												; 從 level one 重新開始
 	mov levelNow, 0
 newLevelStart:											; 進入下一關
 	inc levelNow
-	INVOKE MapChange, consoleHandle, levelNow			; 印出切換關卡畫面
+	INVOKE mapChange, consoleHandle, levelNow			; 印出切換關卡畫面
 	call Clrscr
 	INVOKE init, consoleHandle, levelNow				; 關卡初始化
 	jmp play
@@ -65,7 +65,7 @@ play:													; 主要遊戲
 	jmp play
 
 pause:													; 切到暫停畫面
-	INVOKE PausedScreen, consoleHandle, score
+	INVOKE pausedScreen, consoleHandle, score
 	.IF eax == 1										; 跳到玩遊戲	eax = 1
 		jmp resumeFormPause
 	.ENDIF
@@ -74,7 +74,7 @@ pause:													; 切到暫停畫面
 	.ENDIF
 
 EndScene:												; 切到 GAME OVER 畫面
-	INVOKE End_printChoices, score, consoleHandle
+	INVOKE printChoices, score, consoleHandle
 	.IF changeScene == 1								; 玩家選擇重新開始遊戲
 		mov changeScene, 0
 		jmp restart

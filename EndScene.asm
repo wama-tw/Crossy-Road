@@ -1,8 +1,5 @@
-; INCLUDE Irvine32.inc
-
-; main EQU start@0
 initEnd PROTO
-End_printChoices PROTO, End_score:WORD, outputHandle:DWORD
+printChoices PROTO, End_score:WORD, outputHandle:DWORD
 action PROTO, outputHandle:DWORD
 dec2str PROTO, scoreDec:WORD
 .data
@@ -19,10 +16,7 @@ endMsg_2	BYTE "                                                       "
 			BYTE "                                                       "
 
 restartMsg BYTE "> Press Enter to restart."		;重新開始選項
-
 exitMsg BYTE "> Press Enter to exit."			;離開選項
-
-; consoleHandle DWORD ?
 cellswrt DWORD ?		
 xyInit COORD <13, 5> 							;初始位置
 xyPosition COORD <13, 5> 						;目前位置
@@ -30,28 +24,13 @@ res_xyPosition COORD <?, ?> 					;重新開始選項位置
 exit_xyPosition COORD <?, ?> 					;離開選項位置
 score_xyPosition COORD <?, ?>					;分數位置
 cursor_Pos COORD <?, ?>							;cursor位置
-; windowBound SMALL_RECT <0,0,80,25>				;視窗大小
 time DWORD 0									;經過時間
 changeEndMsg DWORD 0							;判斷印哪個結束訊息
 scoreMsg BYTE "SCORE: "							;分數訊息
-; score_Dec WORD 2559								;分數test(最高分2559分數再高要用DWORD存了，但應該不到那就掛了啦:))
 score_Str BYTE 4 DUP(?)							;要印的分數字串
 printScoreLen DWORD 4							;要印的分數長度
 
 .code
-; main PROC
-; 	INVOKE GetstdHandle, STD_OUTPUT_HANDLE		;拿 STD_OUTPUT_HANDLE 存在 consoleHandle
-; 	mov consoleHandle, eax
-
-; 	INVOKE SetConsoleWindowInfo,				;設定視窗大小
-;     	consoleHandle,
-;     	TRUE,
-;     	ADDR windowBound
-
-; 	INVOKE End_printChoices, score_Dec 			;印重新開始和離開選項
-; 	call WaitMsg
-; 	exit
-; main ENDP
 initEnd PROC
 	mov ebx, xyInit
 	mov xyPosition, ebx
@@ -60,7 +39,7 @@ initEnd PROC
 	ret
 initEnd ENDP
 
-End_printChoices PROC,
+printChoices PROC,
 	End_score:WORD,
 	outputHandle:DWORD
 
@@ -142,7 +121,7 @@ printScore_2:
 
 	INVOKE action, outputHandle						;要執行的動作
 	ret
-End_printChoices ENDP
+printChoices ENDP
 
 
 action PROC USES eax ebx,
@@ -257,5 +236,3 @@ change:
 	loop change
 	ret
 dec2str ENDP
-
-; END main

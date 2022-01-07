@@ -1,13 +1,10 @@
-MapChange PROTO,
+mapChange PROTO,
 	consoleHandle:DWORD,
 	level:BYTE
 
-Print_Number PROTO,
+printNumber PROTO,
     consoleHandle:DWORD,
     level:BYTE
-
-;Comment @
-;Definitions copied from SmallWin.inc:
 
 .data
 	levelT  BYTE " _     _______     _______ _     "
@@ -72,7 +69,7 @@ Print_Number PROTO,
 .code
 
 
-MapChange PROC,
+mapChange PROC,
 	consoleHandle:DWORD,
 	levelNum:BYTE
 
@@ -114,7 +111,7 @@ Print_level:
     LOOP Print_level
 
 
-    INVOKE Print_Number,
+    INVOKE printNumber,
         consoleHandle,
         levelNum
 
@@ -123,9 +120,9 @@ Print_level:
 	popad
 
 	ret
-MapChange ENDP
+mapChange ENDP
 
-Print_Number PROC,
+printNumber PROC,
     consoleHandle:DWORD,
     level:BYTE
 
@@ -298,6 +295,4 @@ L_final:
     popad
 
     ret
-Print_Number ENDP
-
-;END main
+printNumber ENDP
