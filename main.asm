@@ -5,10 +5,15 @@ INCLUDE Score.asm
 INCLUDE MapChange.asm
 INCLUDE PausedScreen.asm
 INCLUDE project_StartScene.asm
+; 組員公約:
+; 	玩遊戲		eax = 1
+; 	暫停		eax = 2
+; 	結束畫面	eax = 3
+; 	離開程式	eax = 4
 .data
 	windowTitleStr BYTE "Crossy Road",0
 	consoleHandle    DWORD ?
-	windowBound SMALL_RECT <0,0,80,25>				;視窗大小
+	windowBound SMALL_RECT <0,0,80,25>					; 視窗大小
 	score WORD 0
 	changeScene BYTE 0
 	levelNow BYTE 0
@@ -20,65 +25,65 @@ main PROC
 	INVOKE GetstdHandle, STD_OUTPUT_HANDLE
 	mov consoleHandle, eax
 	
-	INVOKE SetConsoleTitle, ADDR windowTitleStr
+	INVOKE SetConsoleTitle, ADDR windowTitleStr			; 設定視窗標題
 
-	INVOKE SetConsoleWindowInfo,				;設定視窗大小
+	INVOKE SetConsoleWindowInfo,						; 設定視窗大小
      	consoleHandle,
      	TRUE,
      	ADDR windowBound
 
-	INVOKE Print_Start, consoleHandle
-	.IF eax == 3
+	INVOKE Print_Start, consoleHandle					; 遊戲歡迎/開始畫面
+	.IF eax == 3										; 跳到結束畫面	eax = 3
 		jmp ExitProgram
 	.ENDIF
 	
-restart:
+restart:												; 從 level one 重新開始
 	mov score, 0
 	mov life, 3
 	mov levelNow, 0
-newLevelStart:
+newLevelStart:											; 進入下一關
 	inc levelNow
-	INVOKE MapChange, consoleHandle, levelNow
+	INVOKE MapChange, consoleHandle, levelNow			; 印出切換關卡畫面
 	call Clrscr
-	INVOKE init, consoleHandle, levelNow
+	INVOKE init, consoleHandle, levelNow				; 關卡初始化
 	jmp play
-resumeFormPause:
+resumeFormPause:										; 從暫停畫面回遊戲畫面
 	INVOKE resume, consoleHandle
 	INVOKE printScore, consoleHandle
-play:
-	INVOKE controlSheep, consoleHandle
-	.IF eax == 2
+play:													; 主要遊戲
+	INVOKE controlSheep, consoleHandle					; 控制羊的動作
+	.IF eax == 2										; 跳到暫停		eax = 2
 		jmp pause
 	.ENDIF
-	INVOKE carsRun, consoleHandle
-	.IF life == 0
+	INVOKE carsRun, consoleHandle						; 讓車跑起來
+	.IF life == 0										; 生命值為零，結束遊戲
 		jmp EndScene
 	.ENDIF
-	.IF sheepPosition.x == 79
+	.IF sheepPosition.x == 79							; 走到最右邊，進入下一關
 		jmp newLevelStart
 	.ENDIF
 	jmp play
 
-pause:
+pause:													; 切到暫停畫面
 	INVOKE PausedScreen, consoleHandle, score
-	.IF eax == 1
+	.IF eax == 1										; 跳到玩遊戲	eax = 1
 		jmp resumeFormPause
 	.ENDIF
-	.IF eax == 3
+	.IF eax == 3										; 跳到結束畫面	eax = 3
 		jmp EndScene
 	.ENDIF
 
-EndScene:
+EndScene:												; 切到 GAME OVER 畫面
 	INVOKE End_printChoices, score, consoleHandle
-	.IF changeScene == 1
+	.IF changeScene == 1								; 玩家選擇重新開始遊戲
 		mov changeScene, 0
 		jmp restart
 	.ENDIF
-	.IF changeScene == 4
+	.IF changeScene == 4								; 玩家選擇結束程式
 		mov changeScene, 0
 		jmp ExitProgram
 	.ENDIF
-ExitProgram:
+ExitProgram:											; 結束程式
 	exit
 main ENDP
 
