@@ -1,5 +1,5 @@
 INCLUDE Irvine32.inc
-INCLUDE inLevel.asm
+INCLUDE InLevel.asm
 INCLUDE EndScene.asm
 INCLUDE Score.asm
 INCLUDE MapChange.asm
