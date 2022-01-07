@@ -293,5 +293,3 @@ L_final:
 
     ret                 ; 回到主程式
 printNumber ENDP
-
-;END main

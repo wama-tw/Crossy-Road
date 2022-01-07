@@ -116,13 +116,13 @@ START:
 
     mov bx, continuePos.y       ; bx存continue字樣的位置
     mov dx, exitPos.y           ; dx存exit字樣的位置
-    .IF (ax == 1C0Dh) && (cursorPos.y == bx)    ; 若按下ENTER且此時cursor在continue那行
+    .IF (ax == 1C0Dh) && (cursorPos.y == bx)    ; 若按下Enter且此時cursor在continue那行
         call Clrscr     ; 清空畫面
         popad           ; 將暫存器pop出來
         mov eax, 1      ; 以eax回傳下一步(1表示繼續遊戲)
         ret             ; 回到主程式
     .ENDIF
-    .IF (ax == 1C0Dh) && (cursorPos.y == dx)    ; 若按下ENTER且此時cursor在exit那行
+    .IF (ax == 1C0Dh) && (cursorPos.y == dx)    ; 若按下Enter且此時cursor在exit那行
         call Clrscr     ; 清空畫面
         popad           ; 將暫存器pop出來
         mov eax, 3      ; 以eax回傳下一步(3表示前往離開畫面)
