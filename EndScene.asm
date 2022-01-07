@@ -31,7 +31,7 @@ score_Str BYTE 4 DUP(?)							;要印的分數字串
 printScoreLen DWORD 4							;要印的分數長度
 
 .code
-initEnd PROC
+initEnd PROC									;初始化各項變數
 	mov ebx, xyInit
 	mov xyPosition, ebx
 	mov time, 0
