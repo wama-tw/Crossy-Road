@@ -1,54 +1,57 @@
 
-	controlSheep PROTO,
-        outputHandle: DWORD
-	checkIfSheepIsByRoad PROTO,
-		roadSideX: WORD,
-        outputHandle: DWORD
-	init PROTO,
-        outputHandle: DWORD,
-		levelNum: BYTE
-	newRoad PROTO,
-		thisRoadPosition: COORD,
-		roadNum: BYTE,
-        outputHandle: DWORD
-	carRun PROTO,
-		carPosition: COORD,
-		roadNum: BYTE,
-        outputHandle: DWORD
-	carsRun PROTO,
-        outputHandle: DWORD
-	moveCarOnScreen PROTO,
-		startTime: DWORD,
-		carPosition: COORD,
-		roadNum: BYTE,
-		direction: BYTE,
-        outputHandle: DWORD
-	moveCarPosition PROTO,
-		roadNum: BYTE,
-		direction: BYTE
-	copyCars PROTO,
-		carPosition: COORD,
-		carNum: WORD,
-        outputHandle: DWORD
-	clearCars PROTO,
-		carPosition: COORD,
-		carNum: WORD,
-        outputHandle: DWORD
-	getRandomNumber PROTO,
-		rangeLowerbound: DWORD,
-		rangeUpperbound: DWORD
-	checkIfSheepIsHitByCar PROTO,
-		carPosition: COORD
-	changeDisplayLife PROTO,
-		outputHandle: DWORD
-	decToStr PROTO,
-		decNum: WORD
-	initScore PROTO,
-		outputHandle: DWORD
-	countScore PROTO, 
-		sheepPos_X: WORD, 
-		roadPos_x: WORD, 
-		outputHandle: DWORD
+controlSheep PROTO,
+	outputHandle: DWORD
+checkIfSheepIsByRoad PROTO,
+	roadSideX: WORD,
+	outputHandle: DWORD
+init PROTO,
+	outputHandle: DWORD,
+	levelNum: BYTE
+setStratTime PROTO
+setSpeed PROTO,
+	levelNum: BYTE
+newRoad PROTO,
+	thisRoadPosition: COORD,
+	roadNum: BYTE,
+	outputHandle: DWORD
+carRun PROTO,
+	carPosition: COORD,
+	roadNum: BYTE,
+	outputHandle: DWORD
+carsRun PROTO,
+	outputHandle: DWORD
+moveCarOnScreen PROTO,
+	startTime: DWORD,
+	carPosition: COORD,
+	roadNum: BYTE,
+	direction: BYTE,
+	outputHandle: DWORD
+moveCarPosition PROTO,
+	roadNum: BYTE,
+	direction: BYTE
+copyCars PROTO,
+	carPosition: COORD,
+	carNum: WORD,
+	outputHandle: DWORD
+clearCars PROTO,
+	carPosition: COORD,
+	carNum: WORD,
+	outputHandle: DWORD
+getRandomNumber PROTO,
+	rangeLowerbound: DWORD,
+	rangeUpperbound: DWORD
+checkIfSheepIsHitByCar PROTO,
+	carPosition: COORD
+changeDisplayLife PROTO,
+	outputHandle: DWORD
+decToStr PROTO,
+	decNum: WORD
+initScore PROTO,
+	outputHandle: DWORD
+countScore PROTO, 
+	sheepPos_X: WORD, 
+	roadPos_x: WORD, 
+	outputHandle: DWORD
 
 .data
 	xyBound COORD <80,25> ; 一個頁面最大的邊界
@@ -94,35 +97,9 @@ init PROC uses ebx,
 	add roadPosition.x, ax
 	INVOKE newRoad, roadPosition, 3, outputHandle
 
-	mov ebx, 0
-	mov al, levelNum
-	mov bl, 20
-	mul bl
-	mov bx, ax
-	INVOKE getRandomNumber, 250, 300
-	sub eax, ebx
-	mov speedOne, eax
-	INVOKE getRandomNumber, 250, 300
-	sub eax, ebx
-	mov speedTwo, eax
-	INVOKE getRandomNumber, 250, 300
-	sub eax, ebx
-	mov speedThree, eax
+	INVOKE setSpeed, levelNum
 
-	INVOKE GetTickCount
-	mov startTimeOne, eax
-	mov eax, speedOne
-	add startTimeOne, eax
-	
-	INVOKE GetTickCount
-	mov startTimeTwo, eax
-	mov eax, speedTwo
-	add startTimeTwo, eax
-	
-	INVOKE GetTickCount
-	mov startTimeThree, eax
-	mov eax, speedThree
-	add startTimeThree, eax
+	INVOKE setStratTime
 	
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,   ; console output handle
@@ -140,9 +117,52 @@ init PROC uses ebx,
 		ADDR cellsWritten     ; output count
 	add lifeDisplayPosition.x, 6
 	INVOKE changeDisplayLife, outputHandle
+
 	INVOKE initScore, outputHandle
 	ret
 init ENDP
+
+setSpeed PROC uses eax ebx,
+	levelNum: BYTE
+
+
+	mov ebx, 0
+	mov al, levelNum
+	mov bl, 20
+	mul bl
+	mov bx, ax
+	INVOKE getRandomNumber, 250, 300
+	sub eax, ebx
+	mov speedOne, eax
+	INVOKE getRandomNumber, 250, 300
+	sub eax, ebx
+	mov speedTwo, eax
+	INVOKE getRandomNumber, 250, 300
+	sub eax, ebx
+	mov speedThree, eax
+
+	ret
+setSpeed ENDP
+
+setStratTime PROC uses eax
+
+	INVOKE GetTickCount
+	mov startTimeOne, eax
+	mov eax, speedOne
+	add startTimeOne, eax
+	
+	INVOKE GetTickCount
+	mov startTimeTwo, eax
+	mov eax, speedTwo
+	add startTimeTwo, eax
+	
+	INVOKE GetTickCount
+	mov startTimeThree, eax
+	mov eax, speedThree
+	add startTimeThree, eax
+
+	ret
+setStratTime ENDP
 
 resume PROC,
     outputHandle: DWORD
@@ -159,15 +179,15 @@ resume PROC,
 	mov roadOneCarPosition.y, 0
 	mov ecx, 25
 	drawRoadOne: 
-	push ecx
-	INVOKE WriteConsoleOutputCharacter,
-        outputHandle,   ; console output handle
-        ADDR roadSide,   ; pointer to the top box line
-        13,   ; size of box line
-        roadOneCarPosition,   ; coordinates of first char
-        ADDR cellsWritten     ; output count
-	inc roadOneCarPosition.y
-	pop ecx
+		push ecx
+		INVOKE WriteConsoleOutputCharacter,
+			outputHandle,   ; console output handle
+			ADDR roadSide,   ; pointer to the top box line
+			13,   ; size of box line
+			roadOneCarPosition,   ; coordinates of first char
+			ADDR cellsWritten     ; output count
+		inc roadOneCarPosition.y
+		pop ecx
 	loop drawRoadOne
 	pop roadOneCarPosition
 
@@ -193,32 +213,19 @@ resume PROC,
 	mov roadThreeCarPosition.y, 0
 	mov ecx, 25
 	drawRoadThree: 
-	push ecx
-	INVOKE WriteConsoleOutputCharacter,
-        outputHandle,   ; console output handle
-        ADDR roadSide,   ; pointer to the top box line
-        13,   ; size of box line
-        roadThreeCarPosition,   ; coordinates of first char
-        ADDR cellsWritten     ; output count
-	inc roadThreeCarPosition.y
-	pop ecx
+		push ecx
+		INVOKE WriteConsoleOutputCharacter,
+			outputHandle,   ; console output handle
+			ADDR roadSide,   ; pointer to the top box line
+			13,   ; size of box line
+			roadThreeCarPosition,   ; coordinates of first char
+			ADDR cellsWritten     ; output count
+		inc roadThreeCarPosition.y
+		pop ecx
 	loop drawRoadThree
 	pop roadThreeCarPosition
 
-	INVOKE GetTickCount
-	mov startTimeOne, eax
-	mov eax, speedOne
-	add startTimeOne, eax
-	
-	INVOKE GetTickCount
-	mov startTimeTwo, eax
-	mov eax, speedTwo
-	add startTimeTwo, eax
-	
-	INVOKE GetTickCount
-	mov startTimeThree, eax
-	mov eax, speedThree
-	add startTimeThree, eax
+	INVOKE setStratTime
 	
 	INVOKE WriteConsoleOutputCharacter,
 		outputHandle,   ; console output handle
@@ -236,6 +243,7 @@ resume PROC,
 		ADDR cellsWritten     ; output count
 	add lifeDisplayPosition.x, 6
 	INVOKE changeDisplayLife, outputHandle
+
 	INVOKE initScore, outputHandle
 	ret
 resume ENDP
