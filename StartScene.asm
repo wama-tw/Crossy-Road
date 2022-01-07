@@ -18,8 +18,8 @@ printStart PROTO, consoleHandle:DWORD
 
 	xyPos COORD <11,7>
 
-	NewGame BYTE "press '->' to start game", 0
-	LeaveMsg BYTE "press '<-' to exit", 0
+	NewGame BYTE "Press '->' to start game", 0
+	LeaveMsg BYTE "Press '<-' to exit", 0
 	cells_Written DWORD ?
 
 .code
