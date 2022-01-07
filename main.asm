@@ -4,7 +4,7 @@ INCLUDE EndScene.asm
 INCLUDE Score.asm
 INCLUDE MapChange.asm
 INCLUDE PausedScreen.asm
-INCLUDE project_StartScene.asm
+INCLUDE StartScene.asm
 ; 組員公約:
 ; 	玩遊戲		eax = 1
 ; 	暫停		eax = 2
