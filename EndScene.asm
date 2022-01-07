@@ -35,8 +35,8 @@ time DWORD 0									;經過時間
 changeEndMsg DWORD 0							;判斷印哪個結束訊息
 scoreMsg BYTE "SCORE: "							;分數訊息
 ; score_Dec WORD 2559								;分數test(最高分2559分數再高要用DWORD存了，但應該不到那就掛了啦:))
-score_Str BYTE 4 DUP(?)
-printScoreLen DWORD 4
+score_Str BYTE 4 DUP(?)							;要印的分數字串
+printScoreLen DWORD 4							;要印的分數長度
 
 .code
 ; main PROC
@@ -64,7 +64,7 @@ End_printChoices PROC,
 	End_score:WORD,
 	outputHandle:DWORD
 
-	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO			;將Cursor設為可見
 	mov cursorInfo.dwSize, 100
 	mov cursorInfo.bVisible, 1
 	INVOKE SetConsoleCursorInfo,
@@ -72,7 +72,7 @@ End_printChoices PROC,
         ADDR cursorInfo
 
 	call Clrscr
-	call initEnd
+	call initEnd									;初始化各項變數
 	INVOKE dec2str, End_score						;數字轉字串
 
 	add xyPosition.Y, 7								;設定分數要印的位置
@@ -93,7 +93,7 @@ End_printChoices PROC,
 	mov esi, 0
 printScore_1:
 	push ecx
-	.IF [score_Str + esi] == '0'
+	.IF [score_Str + esi] == '0'					;將分數前面的0去掉
 		.IF esi == 3
 			jmp printScore_2
 		.ENDIF
@@ -140,7 +140,7 @@ printScore_2:
 		exit_xyPosition,
 		ADDR cellswrt
 
-	INVOKE action, outputHandle							;要執行的動作
+	INVOKE action, outputHandle						;要執行的動作
 	ret
 End_printChoices ENDP
 
@@ -225,13 +225,13 @@ printline_2:
 		mov bx, res_xyPosition.Y
 		.If cursor_Pos.Y == bx
 			call ClrScr
-			mov changeScene, 1
+			mov changeScene, 1						;將 1 存進 changeScene
 			jmp Exit_PROC
 		.ENDIF
 		mov bx, exit_xyPosition.Y
 		.If cursor_Pos.Y == bx
 			call ClrScr
-			mov changeScene, 4
+			mov changeScene, 4						;將 4 存進 changeScene
 			jmp Exit_PROC
 		.ENDIF
 	.ENDIF
