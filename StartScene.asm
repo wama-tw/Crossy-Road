@@ -28,7 +28,7 @@ printStart PROTO, consoleHandle:DWORD
 printStart PROC USES ecx esi,
 	consoleHandle:DWORD
 
-	LOCAL cursorInfo:CONSOLE_CURSOR_INFO
+	LOCAL cursorInfo:CONSOLE_CURSOR_INFO    ;將Cursor設為不可見
 	mov cursorInfo.dwSize, 100
 	mov cursorInfo.bVisible, 0
 	INVOKE SetConsoleCursorInfo,
@@ -40,7 +40,7 @@ printStart PROC USES ecx esi,
 	mov ecx, 6
 	mov esi, 0
 
-PRINT_T:
+PRINT_T:          ;印出遊戲標題Crossy Road
 	push ecx
 	INVOKE WriteConsoleOutputCharacter,
 		consoleHandle,
@@ -55,7 +55,7 @@ PRINT_T:
 	loop PRINT_T
 
 
-Print_Option:
+Print_Option:               ;印出結束程式和開始遊戲的選項
     add xyPos.y, 2
     add xyPos.x, 20
 
@@ -75,7 +75,7 @@ Print_Option:
         xyPos,
         ADDR cells_Written
 
-CHOOSE_OPT:
+CHOOSE_OPT:             ;判斷鍵盤選擇
     call ReadChar
 
 	.IF ax == 4d00h     ;right arrow to start game
@@ -86,7 +86,7 @@ CHOOSE_OPT:
         ret
     .ENDIF
 
-INSTRUCTIONS:
+INSTRUCTIONS:               ;印出遊戲說明
     call Clrscr
 
 	mov ecx, 6
@@ -106,7 +106,7 @@ PRINT_I:
 	inc xyPos.y
 	pop ecx
 	loop PRINT_I
-READY:
+READY:              ;等待玩家按下空白鍵開始遊戲
 	call ReadChar
 	.IF ax == 3920h
         ret
