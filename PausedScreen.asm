@@ -1,4 +1,4 @@
-PausedScreen PROTO,
+pausedScreen PROTO,
 	consoleH:DWORD,
 	score:WORD
 
@@ -24,7 +24,7 @@ dec2str PROTO,
 
 .code
 
-PausedScreen PROC,
+pausedScreen PROC,
 	consoleH:DWORD,
 	score:WORD
 
@@ -143,4 +143,4 @@ START:
     jmp START
 
 
-PausedScreen ENDP
+pausedScreen ENDP
